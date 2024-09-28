@@ -27,5 +27,25 @@ async function getLatLon() {
 
 
 getLatLon().then(coords => {
-  console.log(coords);
+  console.log("LATITUDE:",coords.lat);
+  console.log("LONGITUDE:",coords.lon);
+});
+
+async function getConditions(){
+  const coords = await getLatLon();
+  const url = `${PROTOCOL}://${BASE_URL}?lat=${coords.lat}&lon=${coords.lon}&appid=${APP_ID}&cnt=${CNT}&units=${UNITS}&lang=${IDIOM}`
+  try {
+    const res = await axios.get(url);
+    const feelsLike =  res.data.list[0].main.feels_like;
+    const desc = res.data.list[0].weather[0].description;
+    return { feelsLike, desc };
+  } catch (error) {
+    console.error("Erro ao buscar coordenadas:", error);
+    return null;
+  }
+}
+
+getConditions().then(coords => {
+  console.log("Sensação Térmica:",coords.feelsLike);
+  console.log("Descrição:",coords.desc);
 });
